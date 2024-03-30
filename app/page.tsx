@@ -7,11 +7,7 @@ export default function Home() {
   const user = useAuth();
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <UserButton />
-      <Button>
-        Hello World
-      </Button>
-      
+
       {/*<UploadButton*/}
       {/*    endpoint="pdfUploader"*/}
       {/*    onClientUploadComplete={(res) => {*/}

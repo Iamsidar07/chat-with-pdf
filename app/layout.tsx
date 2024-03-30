@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ReactQueryProvder from "@/components/ReactQueryProvder";
+import Navbar from "@/components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,10 @@ export default function RootLayout({
     <ReactQueryProvder>
       <ClerkProvider>
         <html lang="en">
-          <body className={inter.className}>{children}</body>
+          <body className={inter.className}>
+            <Navbar/>
+            {children}
+          </body>
         </html>
       </ClerkProvider>
     </ReactQueryProvder>
