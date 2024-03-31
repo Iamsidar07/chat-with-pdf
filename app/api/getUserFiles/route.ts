@@ -9,7 +9,7 @@ export const GET = async (req: NextRequest) => {
     const { userId } = getAuth(req);
     const files = await FileModel.find({
       userId,
-    });
+    }).sort({ createdAt: -1 });
     return NextResponse.json(
       { success: true, results: files },
       { status: 200 },

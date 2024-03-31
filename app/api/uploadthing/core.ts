@@ -1,29 +1,21 @@
+import FileModel from "@/models/File";
+import { pineconeIndex } from "@/utils/pinecone";
+import { currentUser } from "@clerk/nextjs";
+import { TaskType } from "@google/generative-ai";
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { PineconeStore } from "@langchain/pinecone";
+import { WebPDFLoader } from "langchain/document_loaders/web/pdf";
+import { NextRequest } from "next/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
-import { NextRequest } from "next/server";
-import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
-import { TaskType } from "@google/generative-ai";
-import { WebPDFLoader } from "langchain/document_loaders/web/pdf";
-import { pinecone, pineconeIndex } from "@/utils/pinecone";
-import { PineconeStore } from "@langchain/pinecone";
-import { MongoDBAtlasVectorSearch } from "@langchain/mongodb";
-import { MongoClient } from "mongodb";
-import { currentUser } from "@clerk/nextjs";
-import FileModel from "@/models/File";
 
 export const runtime = "nodejs";
 
 const f = createUploadthing();
 
-const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
 const middleware = async ({ req }: { req: NextRequest }) => {
-  // This code runs on your server before upload
   const user = await currentUser();
-
-  // If you throw, the user will not be able to upload
   if (!user) throw new UploadThingError("Unauthorized");
-
-  // Whatever is returned here is accessible in onUploadComplete as `metadata`
   return { userId: user.id };
 };
 const onUploadComplete = async ({
@@ -61,25 +53,6 @@ const onUploadComplete = async ({
       pineconeIndex,
       namespace: file.key,
     });
-    // const client = new MongoClient(process.env.MONGODB_URI || "");
-    // const collection = client.db("chatwithpdf").collection(file.key);
-    //
-    // const vectorStore = await MongoDBAtlasVectorSearch.fromDocuments(docs,embeddings, {
-    //     collection,
-    //     indexName: "chatwithpdf",
-    //     textKey: "text",
-    //     embeddingKey: "embedding"
-    // })
-    // const assignedIds = await vectorStore.addDocuments([
-    //     { pageContent: "upsertable", metadata: {} },
-    // ]);
-    //
-    // const upsertedDocs = [{ pageContent: "overwritten", metadata: {} }];
-    //
-    // await vectorStore.addDocuments(upsertedDocs, { ids: assignedIds });
-    //
-    // await client.close();
-    // This code RUNS ON YOUR SERVER after upload
     console.log("Upload complete for userId:", metadata.userId);
 
     console.log("file url", file.url);
@@ -90,7 +63,6 @@ const onUploadComplete = async ({
       },
     );
 
-    // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
     return { uploadedBy: metadata.userId };
   } catch (e) {
     console.error("FAILED EMBEDDINGS: ", e);

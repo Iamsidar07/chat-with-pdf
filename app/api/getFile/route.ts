@@ -14,14 +14,11 @@ export const GET = async (req: NextRequest) => {
   try {
     await dbConnect();
     const { userId } = getAuth(req);
-    const files = await FileModel.findOne({
+    const file = await FileModel.findOne({
       userId,
       key,
     });
-    return NextResponse.json(
-      { success: true, results: files },
-      { status: 200 },
-    );
+    return NextResponse.json({ success: true, file }, { status: 200 });
   } catch (e) {
     return NextResponse.json({ success: false, error: e }, { status: 500 });
   }

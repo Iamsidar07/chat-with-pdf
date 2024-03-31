@@ -2,6 +2,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useEffect } from "react";
 
 const Page = () => {
   const router = useRouter();
@@ -14,17 +15,24 @@ const Page = () => {
   } = useQuery({
     queryKey: ["auth"],
     queryFn: async () => {
-      const response = await axios.get("/api/auth-callback");
-      return response.data;
+      try {
+        const response = await axios.get("/api/auth-callback");
+        return response.data;
+      } catch (error) {
+        throw new Error("Failed to authenticate");
+      }
     },
     retryDelay: (_failureCount) => 5,
   });
-  if (isAuth?.success) {
-    router.push(origin ? `/${origin}` : "/dashboard");
-  }
-  if (isAuth?.status === 401) {
-    router.push("/sign-in");
-  }
+  useEffect(() => {
+    if (!isLoading && isAuth) {
+      if (isAuth.success) {
+        router.push(origin ? `/${origin}` : "/dashboard");
+      } else if (isAuth.status === 401) {
+        router.push("/sign-in");
+      }
+    }
+  }, [isLoading, isAuth, origin, router]);
   if (error) {
     alert("Something went wrong!");
   }
