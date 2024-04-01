@@ -34,7 +34,7 @@ const UploadDropzone = () => {
     if (data && data?.file) {
       router.push(`/dashboard/${data.file._id}`);
     }
-  }, [data.file]);
+  }, [data?.file]);
 
   const startProgressSimulation = () => {
     setUploadProgress(0);

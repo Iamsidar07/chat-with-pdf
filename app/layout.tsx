@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import ReactQueryProvder from "@/components/ReactQueryProvder";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "@/components/ui/toaster";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,9 +23,11 @@ export default function RootLayout({
     <ReactQueryProvder>
       <ClerkProvider>
         <html lang="en">
-          <body className={inter.className}>
-            <Navbar/>
-            <Toaster/>
+          <body
+            className={cn("min-h-screen grainy antialiased", inter.className)}
+          >
+            <Navbar />
+            <Toaster />
             {children}
           </body>
         </html>

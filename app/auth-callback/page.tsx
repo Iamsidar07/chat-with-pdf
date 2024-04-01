@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect } from "react";
+import { Loader } from "lucide-react";
 
 const Page = () => {
   const router = useRouter();
@@ -40,6 +41,7 @@ const Page = () => {
   return (
     <div className="w-full mt-24 grid place-items-center">
       <div className="flex flex-col items-center justify-center gap-2">
+        <Loader className="w-6 h-6 animate-spin" />
         <h3 className="text-xl font-semibold">Setting up your account...</h3>
         <p>You will be redirected automatically.</p>
       </div>

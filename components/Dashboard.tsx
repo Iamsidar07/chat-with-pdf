@@ -70,7 +70,7 @@ const Dashboard = ({ userId }: { userId: string }) => {
         <h2 className="text-lg font-bold sm:text-5xl">My Files</h2>
         <UploadButton />
       </div>
-      <Separator className="mt-2" />
+      <Separator className="mt-12" />
       {files && files?.length > 0 ? (
         <ul className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {files.map((file: any) => (
