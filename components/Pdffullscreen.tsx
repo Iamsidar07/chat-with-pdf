@@ -7,7 +7,6 @@ import SimpleBar from "simplebar-react";
 import { Document, Page } from "react-pdf";
 import { useToast } from "./ui/use-toast";
 import { useState } from "react";
-import { useResizeDetector } from "react-resize-detector";
 
 interface PdffullscreenProps {
   url: string;
@@ -15,7 +14,6 @@ interface PdffullscreenProps {
 const Pdffullscreen = ({ url }: PdffullscreenProps) => {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
-  const { width, ref } = useResizeDetector();
   const [totalPages, setTotalPages] = useState<number | null>(null);
 
   return (
@@ -38,7 +36,7 @@ const Pdffullscreen = ({ url }: PdffullscreenProps) => {
       </DialogTrigger>
 
       <DialogContent className="max-w-7xl w-full mx-auto mt-6 max-h-[calc(100vh-10rem)] overflow-y-scroll no-scrollbar ">
-        <div className="flex-1 w-full" ref={ref}>
+        <div className="flex-1 w-full">
           <SimpleBar autoHide={false} className="max-h-[calc(100vh-10rem)]">
             <Document
               file={url}
@@ -63,7 +61,6 @@ const Pdffullscreen = ({ url }: PdffullscreenProps) => {
                 <Page
                   key={index}
                   pageNumber={index + 1}
-                  width={width ? width : 1}
                 />
               ))}
             </Document>
