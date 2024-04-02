@@ -8,7 +8,6 @@ export const GET = async (req: NextRequest) => {
   if (!userId) {
     return NextResponse.json({ error: "userId is required" }, { status: 400 });
   }
-
   try {
     await dbConnect();
     const user = await UserModel.findOne({

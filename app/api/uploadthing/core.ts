@@ -47,17 +47,15 @@ const onUploadComplete = async ({
     const embeddings = new GoogleGenerativeAIEmbeddings({
       modelName: "embedding-001", // 768 dimensions
       taskType: TaskType.RETRIEVAL_DOCUMENT,
-      apiKey: process.env.GOOGLE_API_KEY,
+      apiKey: String(process.env.GOOGLE_API_KEY),
     });
     await PineconeStore.fromDocuments(docs, embeddings, {
       pineconeIndex,
       namespace: file.key,
     });
-    console.log("Upload complete for userId:", metadata.userId);
 
-    console.log("file url", file.url);
-    await FileModel.findOneAndUpdate(
-      { id: createdFile.id },
+    await FileModel.findByIdAndUpdate(
+      createdFile._id,
       {
         uploadStatus: "UPLOAD",
       },
@@ -66,8 +64,8 @@ const onUploadComplete = async ({
     return { uploadedBy: metadata.userId };
   } catch (e) {
     console.error("FAILED EMBEDDINGS: ", e);
-    await FileModel.findOneAndUpdate(
-      { id: createdFile.id },
+    await FileModel.findByIdAndUpdate(
+      createdFile._id,
       {
         uploadStatus: "FAILED",
       },

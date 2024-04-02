@@ -17,19 +17,17 @@ const ChatWrapper = ({ fileId, subscriptionPlan }: ChatWrapperProps) => {
     queryFn: async () => {
       try {
         const response = await axios.get(
-          `/api/getFileUploadStatus?fileId=${fileId}`
+          `/api/getFileUploadStatus?fileId=${fileId}`,
         );
-        console.log(response.data)
+        console.log(response.data);
         return response.data;
       } catch (error: any) {
         console.error("FAILED: getFileUploadStatus", error.message);
       }
     },
     refetchInterval: (query) => {
-      const data = query?.state?.data
-      return data?.status == "UPLOAD" || data?.status == "FAILED"
-        ? false
-        : 500;
+      const data = query?.state?.data;
+      return data?.status == "UPLOAD" || data?.status == "FAILED" ? false : 500;
     },
   });
   if (isLoading) {
@@ -90,14 +88,16 @@ const ChatWrapper = ({ fileId, subscriptionPlan }: ChatWrapperProps) => {
       </div>
     );
   }
-  return <ChatContextProvider fileId={fileId}>
-    <div className="relative min-h-[calc(100vh-3.5rem)] bg-zinc-50 flex flex-col divide-y divide-zinc-200 gap-2">
-      <div className="flex-1 flex flex-col mb-28 ">
-        <Messages fileId={fileId}/>
+  return (
+    <ChatContextProvider fileId={fileId}>
+      <div className="relative min-h-[calc(100vh-3.5rem)] bg-zinc-50 flex flex-col divide-y divide-zinc-200 gap-2">
+        <div className="flex-1 flex flex-col mb-28 ">
+          <Messages fileId={fileId} />
+        </div>
+        <ChatInput />
       </div>
-      <ChatInput/>
-    </div>
-  </ChatContextProvider>
+    </ChatContextProvider>
+  );
 };
 
 export default ChatWrapper;

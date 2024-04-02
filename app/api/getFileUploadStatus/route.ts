@@ -6,8 +6,7 @@ import FileModel from "@/models/File";
 export const GET = async (req: NextRequest) => {
   const searchParams = req.nextUrl.searchParams;
   const fileId = searchParams.get("fileId");
-  // TODO
-  // set status code
+
   if (!fileId) {
     return NextResponse.json({ error: "fileId is required" }, { status: 400 });
   }

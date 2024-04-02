@@ -15,8 +15,7 @@ export const GET = async (req: NextRequest) => {
   const limit = searchParams.get("limit")
     ? Number(searchParams.get("limit"))
     : INFINITE_QUERY_LIMIT;
-  // TODO
-  // set status code
+
   if (!fileId) {
     return NextResponse.json({ error: "FileId is required" }, { status: 400 });
   }
@@ -34,10 +33,10 @@ export const GET = async (req: NextRequest) => {
         fileId,
         userId,
       },
-      { id: true, createdAt: true, isUserMessage: true, text: true },
+      { createdAt: true, isUserMessage: true, text: true },
       { limit: limit, skip: (pageNumber - 1) * limit, sort: { createdAt: -1 } },
     );
-    return NextResponse.json(messages, {status: 200})
+    return NextResponse.json(messages, { status: 200 });
   } catch (e) {
     return NextResponse.json({ error: e }, { status: 500 });
   }

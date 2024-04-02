@@ -6,8 +6,7 @@ import FileModel from "@/models/File";
 export const DELETE = async (req: NextRequest) => {
   const searchParams = req.nextUrl.searchParams;
   const id = searchParams.get("id");
-  // TODO
-  // set status code
+
   if (!id) {
     console.log(id);
     return NextResponse.json({ error: "Id is required" }, { status: 400 });
@@ -17,7 +16,7 @@ export const DELETE = async (req: NextRequest) => {
     await dbConnect();
     const { userId } = getAuth(req);
     if (!userId) {
-      return NextResponse.json({ error: "Unaauthoriz" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const file = await FileModel.findById(id);
     if (!file)
