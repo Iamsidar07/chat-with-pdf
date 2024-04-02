@@ -20,7 +20,7 @@ const ChatInput = ({isDisabled}: ChatInputProps) => {
                 rows={1}
                 maxRows={4}
                 onChange={handleInputChange}
-                onKeyDown={(e:KeyboardEvent) => {
+                onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     addMessage();
