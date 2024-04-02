@@ -24,7 +24,7 @@ export const GET = async (req: NextRequest) => {
     await dbConnect();
     const { userId } = getAuth(req);
     const file = await FileModel.findOne({
-      id: fileId,
+      _id: fileId,
       userId,
     });
     if (!file)
@@ -37,6 +37,7 @@ export const GET = async (req: NextRequest) => {
       { id: true, createdAt: true, isUserMessage: true, text: true },
       { limit: limit, skip: (pageNumber - 1) * limit, sort: { createdAt: -1 } },
     );
+    return NextResponse.json(messages, {status: 200})
   } catch (e) {
     return NextResponse.json({ error: e }, { status: 500 });
   }

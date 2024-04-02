@@ -9,13 +9,17 @@ interface PageProps {
     fileId: string;
   };
 }
+
 const Page = async ({ params }: PageProps) => {
   const { fileId } = params;
   const user = await currentUser();
   if (!user || !user.id) redirect("/auth-callback?origin=password");
   const file = await FileModel.findById(fileId);
   if (!file) notFound();
-  const subscriptionPlan = "";
+  const subscriptionPlan = {
+    name: "Pro",
+    pagesPerPdf: 35,
+  };
   return (
     <div className="flex justify-between flex-1 flex-col h-[calc(100vh-56px)]">
       <div className="mx-auto max-w-8xl w-full grow lg:flex xl:px-2">

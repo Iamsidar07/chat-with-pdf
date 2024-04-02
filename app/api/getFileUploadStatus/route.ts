@@ -16,7 +16,7 @@ export const GET = async (req: NextRequest) => {
     const { userId } = getAuth(req);
     const file = await FileModel.findOne({
       userId,
-      id: fileId,
+      _id: fileId,
     });
     if (!file) return NextResponse.json({ status: "PENDING" });
     return NextResponse.json({ status: file.uploadStatus }, { status: 200 });
