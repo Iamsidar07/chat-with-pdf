@@ -32,6 +32,9 @@ dependencies:
   '@langchain/pinecone':
     specifier: ^0.0.3
     version: 0.0.3
+  '@mantine/hooks':
+    specifier: ^7.7.1
+    version: 7.7.1(react@18.2.0)
   '@octoai/client':
     specifier: ^0.5.2
     version: 0.5.2
@@ -1437,6 +1440,14 @@ packages:
       '@pinecone-database/pinecone': 2.2.0
       flat: 5.0.2
       uuid: 9.0.1
+    dev: false
+
+  /@mantine/hooks@7.7.1(react@18.2.0):
+    resolution: {integrity: sha512-3YH2FzKMlg840tb04PBDcDXyBCi9puFOxEBVgc6Y/pN6KFqfOoAnQE/YvgOtwSNXZlbTWyDlQoYj+3je7pA7og==}
+    peerDependencies:
+      react: ^18.2.0
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /@mapbox/node-pre-gyp@1.0.11:

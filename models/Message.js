@@ -2,6 +2,7 @@ import { Schema, model, models } from "mongoose";
 
 const MessageSchema = new Schema(
   {
+    id: String,
     text: String,
     isUserMessage: Boolean,
     userId: { type: String, ref: "User" },
