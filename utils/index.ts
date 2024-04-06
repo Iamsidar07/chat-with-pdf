@@ -2,6 +2,7 @@ import { currentUser } from "@clerk/nextjs";
 import { getUserSubscriptionPlan, stripe } from "./stripe";
 import UserModel from "@/models/User";
 import { PLANS } from "@/config/stripe";
+import dbConnect from "@/db";
 
 export function absoluteUrl(path: string) {
   if (typeof window !== "undefined") return path;
@@ -10,42 +11,51 @@ export function absoluteUrl(path: string) {
 }
 
 export async function createSession() {
-  const user = await currentUser();
-  const bilingUrl = absoluteUrl("/dashboard/billing");
-  if (!user?.id) {
-    throw new Error("Unauthorized");
-  }
+  try {
+    await dbConnect();
+    const user = await currentUser();
+    const bilingUrl = absoluteUrl("/dashboard/billing");
+    if (!user?.id) {
+      throw new Error("Unauthorized");
+    }
 
-  const dbUser = await UserModel.findOne({
-    id: user?.id,
-  });
-  if (!dbUser) {
-    throw new Error("Not found");
-  }
-  const subscriptionPlan = await getUserSubscriptionPlan();
-  if (subscriptionPlan.isSubscribed && dbUser.stripeCustomerId) {
-    const stripeSession = await stripe.billingPortal.sessions.create({
-      customer: dbUser.stripeCustomerId,
-      return_url: bilingUrl,
+    const dbUser = await UserModel.findOne({
+      id: user?.id,
     });
-    return { url: stripeSession.url };
-  }
+    if (!dbUser) {
+      throw new Error("Not found");
+    }
+    const subscriptionPlan = await getUserSubscriptionPlan();
+    if (!subscriptionPlan) {
+      throw new Error("subscriptionPlan not found.");
+    }
+    if (subscriptionPlan.isSubscribed && dbUser.stripeCustomerId) {
+      const stripeSession = await stripe.billingPortal.sessions.create({
+        customer: dbUser.stripeCustomerId,
+        return_url: bilingUrl,
+      });
+      return { url: stripeSession.url };
+    }
 
-  const stripeSessionForUserNotSubscribed =
-    await stripe.checkout.sessions.create({
-      success_url: bilingUrl,
-      cancel_url: bilingUrl,
-      payment_method_types: ["card"],
-      mode: "subscription",
-      line_items: [
-        {
-          price: PLANS.find((plan) => plan.name === "Pro")?.price.priceId.test,
-          quantity: 1,
+    const stripeSessionForUserNotSubscribed =
+      await stripe.checkout.sessions.create({
+        success_url: bilingUrl,
+        cancel_url: bilingUrl,
+        payment_method_types: ["card"],
+        mode: "subscription",
+        line_items: [
+          {
+            price: PLANS.find((plan) => plan.name === "Pro")?.price.priceId
+              .test,
+            quantity: 1,
+          },
+        ],
+        metadata: {
+          userId: user?.id,
         },
-      ],
-      metadata: {
-        userId: user?.id,
-      },
-    });
-  return { url: stripeSessionForUserNotSubscribed.url };
+      });
+    return { url: stripeSessionForUserNotSubscribed.url };
+  } catch (error) {
+    console.log("Failed createSession: ", error);
+  }
 }

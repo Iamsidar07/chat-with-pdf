@@ -1,4 +1,5 @@
 import { PLANS } from "@/config/stripe";
+import dbConnect from "@/db";
 import UserModel from "@/models/User";
 import { currentUser } from "@clerk/nextjs/server";
 import Stripe from "stripe";
@@ -10,8 +11,8 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
 
 export async function getUserSubscriptionPlan() {
   try {
+    await dbConnect();
     const user = await currentUser();
-    console.log("USER: ", user?.id);
 
     if (!user?.id) {
       return {
