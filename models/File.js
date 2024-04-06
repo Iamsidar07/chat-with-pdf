@@ -11,9 +11,9 @@ const FileSchema = new Schema(
     messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
     url: String,
     key: String,
-    userId: { type: String, ref: "User" },
+    userId: { type: String, required: true },
   },
-  { timestamp: true },
+  { timestamps: true },
 );
 
 const FileModel = models.File || model("File", FileSchema);

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
+import { format } from "date-fns";
 
 const Dashboard = ({ userId }: { userId: string }) => {
   const queryClient = useQueryClient();
@@ -43,7 +44,6 @@ const Dashboard = ({ userId }: { userId: string }) => {
     mutationFn: async (fileId: string) => {
       try {
         const res = await axios.delete(`/api/deleteFile?id=${fileId}`);
-        console.log(res.data);
       } catch (error) {
         console.log("Failed to delete");
       }
@@ -52,9 +52,11 @@ const Dashboard = ({ userId }: { userId: string }) => {
       queryClient.invalidateQueries({ queryKey: ["files"] });
     },
     onMutate(fileId) {
+      // when function start to execute
       setCurrentlyDeletingFile(fileId);
     },
     onSettled: () => {
+      // when function end to execute
       setCurrentlyDeletingFile(null);
     },
   });
@@ -92,7 +94,9 @@ const Dashboard = ({ userId }: { userId: string }) => {
               <div className="mt-4 px-6 grid grid-cols-3 place-items-center py-2 gap-6 text-zinc-700">
                 <div className="flex items-center gap-2">
                   <Plus className="w-5 h-5" />
-                  <p className="truncate whitespace-nowrap">{file.createdAt}</p>
+                  <p className="truncate whitespace-nowrap">
+                    {format(new Date(file.createdAt), "MM/dd/yyyy")}
+                  </p>
                 </div>
 
                 <Button

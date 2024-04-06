@@ -26,13 +26,6 @@ export const POST = async (req: NextRequest) => {
     const file = await FileModel.findById(fileId);
     if (!file)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
-    const createdMessage = await MessageModel.create({
-      text: message,
-      isUserMessage: false,
-      fileId,
-      userId: user.id,
-    });
-
     const embeddings = new GoogleGenerativeAIEmbeddings({
       modelName: "embedding-001", // 768 dimensions
       taskType: TaskType.RETRIEVAL_DOCUMENT,
@@ -43,10 +36,9 @@ export const POST = async (req: NextRequest) => {
       namespace: file.key,
     });
 
-    const results = await vectorStore.maxMarginalRelevanceSearch(message, {
-      k: 4,
-    });
+    const results = await vectorStore.similaritySearch(message, 4);
     const context = results.map((r) => r.pageContent).join("\n");
+    console.log({ context });
     const recentMessages: GenerativeAIMessage[] = await MessageModel.find(
       {
         fileId,
@@ -73,7 +65,10 @@ export const POST = async (req: NextRequest) => {
 
     const chat = model.startChat({
       // @ts-ignore
-      history: formatMessageForGoogleGenerativeAI(recentMessages),
+      history:
+        recentMessages && recentMessages.length > 0
+          ? formatMessageForGoogleGenerativeAI(recentMessages)
+          : [],
       generationConfig: {
         maxOutputTokens: 1000,
       },
@@ -82,7 +77,24 @@ export const POST = async (req: NextRequest) => {
   CONTEXT: ${context}
   USER INPUT: ${message}`;
     const result = await chat.sendMessageStream(msg);
-    const stream = GoogleGenerativeAIStream(result);
+    const stream = GoogleGenerativeAIStream(result, {
+      async onCompletion(completion) {
+        console.log({ completion });
+        await MessageModel.create({
+          text: message,
+          isUserMessage: true,
+          fileId,
+          userId: user.id,
+        });
+
+        await MessageModel.create({
+          text: completion,
+          isUserMessage: false,
+          userId: user.id,
+          fileId,
+        });
+      },
+    });
 
     return new StreamingTextResponse(stream);
   } catch (error) {

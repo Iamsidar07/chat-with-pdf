@@ -58,10 +58,7 @@ const Pdffullscreen = ({ url }: PdffullscreenProps) => {
               onLoadSuccess={({ numPages }) => setTotalPages(numPages)}
             >
               {new Array(totalPages).fill(0).map((_, index) => (
-                <Page
-                  key={index}
-                  pageNumber={index + 1}
-                />
+                <Page key={index} pageNumber={index + 1} scale={1.5} />
               ))}
             </Document>
           </SimpleBar>

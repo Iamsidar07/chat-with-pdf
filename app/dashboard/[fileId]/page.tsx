@@ -21,7 +21,7 @@ const Page = async ({ params }: PageProps) => {
     pagesPerPdf: 35,
   };
   return (
-    <div className="flex justify-between flex-1 flex-col h-[calc(100vh-56px)]">
+    <div className="flex justify-between flex-1 flex-col h-[calc(100vh-56px)] ">
       <div className="mx-auto max-w-8xl w-full grow lg:flex xl:px-2">
         <div className="flex-1 xl:flex">
           <div className="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">

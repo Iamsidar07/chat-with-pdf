@@ -3,12 +3,14 @@ import { cn } from "@/lib/utils";
 import React, { forwardRef } from "react";
 import { LucideProps, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { format } from "date-fns";
 interface MessageProps {
-  isNextMessageBySamePerson: boolean;
+  isNextMessageBySamePerson?: boolean;
   message: {
     text: string | JSX.Element;
     id?: string;
     isUserMessage: boolean;
+    createdAt: string;
   };
 }
 
@@ -79,7 +81,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(
                   "text-blue-300": message.isUserMessage,
                 })}
               >
-                new Date(message.createdAt)
+                {format(new Date(message.createdAt), "HH:MM")}
               </div>
             ) : null}
           </div>

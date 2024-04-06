@@ -1,6 +1,6 @@
-"use clinet";
+"use client";
 
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Loader, MessageSquareDashed } from "lucide-react";
 import { useContext, useEffect, useRef } from "react";
@@ -10,10 +10,13 @@ import Message from "./Message";
 
 const Messages = ({ fileId }: { fileId: string }) => {
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
-  const { ref, entry } = useIntersection();
+  const { ref, entry } = useIntersection({
+    threshold: 1,
+    root: lastMessageRef.current,
+  });
   const { isLoading: isAIThinking } = useContext(ChatContext);
   const { data, fetchNextPage, isLoading } = useInfiniteQuery({
-    queryKey: ["messages", fileId],
+    queryKey: ["messages"],
     queryFn: async ({ pageParam }) => {
       const res = await axios.get(
         `/api/getFileMessages?fileId=${fileId}&pageNum=${pageParam}`,
@@ -23,10 +26,7 @@ const Messages = ({ fileId }: { fileId: string }) => {
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.hasMore) {
-        return lastPage.pageNum + 1;
-      }
-      return false;
+      return lastPage?.hasMore ? lastPage.pageNum + 1 : undefined;
     },
   });
   useEffect(() => {
@@ -49,16 +49,18 @@ const Messages = ({ fileId }: { fileId: string }) => {
   };
 
   const combinedMessages = [
-    isAIThinking ? [loadingMessage] : [],
+    ...(isAIThinking ? [loadingMessage] : []),
     ...(messages ?? []),
   ];
+  console.log({ combinedMessages });
 
   return (
-    <div className="flex max-h-[calc(100vh-3.5rem-7rem] border-zinc-200 flex-col-reverse gap-3 overflow-y-auto overflow-x-hidden">
+    <div className="flex h-[calc(100vh-3.5rem-7rem)] pb-24  border-zinc-200 flex-col gap-3 overflow-y-auto no-scrollbar  overflow-x-hidden p-2">
       {combinedMessages && combinedMessages.length > 0 ? (
         combinedMessages?.map((msg, i) => {
           const isNextMessageBySamePerson =
-            msg.isUserMessage === combinedMessages[i - 1].isUserMessage;
+            combinedMessages[i]?.isUserMessage ===
+            combinedMessages[i - 1]?.isUserMessage;
           if (isNextMessageBySamePerson) {
             // next msg by same person
             return (
@@ -80,19 +82,18 @@ const Messages = ({ fileId }: { fileId: string }) => {
               />
             );
           }
-
-          return "";
+          return <Message key={msg._id} message={msg} />;
         })
       ) : isLoading ? (
-        <div className="w-full h-full grid place-items-center">
+        <div className="flex flex-col items-center mt-28 gap-3">
           <Loader className="w-4 h-4 animate-spin" />
           <h2 className="text-sm text-zinc-900">
             Your messages being loading...
           </h2>
         </div>
       ) : (
-        <div className="w-full h-full grid place-items-center">
-          <MessageSquareDashed className="w-4 h-4 animate-spin" />
+        <div className="flex flex-col items-center mt-28 gap-3">
+          <MessageSquareDashed className="w-4 h-4 text-red-500" />
           <h2 className="text-sm text-zinc-900">
             Nothing to show here! Start your first chat with your lovely PDF
           </h2>

@@ -6,10 +6,11 @@ import { ChevronLeft, Link, Loader, XCircle } from "lucide-react";
 import ChatInput from "./ChatInput";
 import ChatContextProvider from "@/components/ChatContext";
 import Messages from "@/components/Messages";
+import { getUserSubscriptionPlan } from "@/utils/stripe";
 
 interface ChatWrapperProps {
   fileId: string;
-  subscriptionPlan: string;
+  subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>;
 }
 const ChatWrapper = ({ fileId, subscriptionPlan }: ChatWrapperProps) => {
   const { data, isLoading } = useQuery({
@@ -71,8 +72,11 @@ const ChatWrapper = ({ fileId, subscriptionPlan }: ChatWrapperProps) => {
             </h3>
             <p className="text-zinc-400 text-sm">Too many pages in your pdf</p>
             <p className="text-zinc-500 text-sm">
-              Your <span className="font-semibold font-mono">Free Plan</span>{" "}
-              plan ony support 35 pages per pdf.
+              Your{" "}
+              <span className="font-semibold font-mono">
+                {subscriptionPlan?.name}
+              </span>{" "}
+              plan ony support {subscriptionPlan?.pagesPerPdf} pages per pdf.
             </p>
             <Link
               href={"/dashboard"}
@@ -90,8 +94,8 @@ const ChatWrapper = ({ fileId, subscriptionPlan }: ChatWrapperProps) => {
   }
   return (
     <ChatContextProvider fileId={fileId}>
-      <div className="relative min-h-[calc(100vh-3.5rem)] bg-zinc-50 flex flex-col divide-y divide-zinc-200 gap-2">
-        <div className="flex-1 flex flex-col mb-28 ">
+      <div className="relative h-[calc(100vh-3.5rem)] bg-zinc-50 flex flex-col divide-y divide-zinc-200 gap-2">
+        <div className="flex-1 flex flex-col mb-28">
           <Messages fileId={fileId} />
         </div>
         <ChatInput />

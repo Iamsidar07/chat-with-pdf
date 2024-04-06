@@ -54,22 +54,16 @@ const onUploadComplete = async ({
       namespace: file.key,
     });
 
-    await FileModel.findByIdAndUpdate(
-      createdFile._id,
-      {
-        uploadStatus: "UPLOAD",
-      },
-    );
+    await FileModel.findByIdAndUpdate(createdFile._id, {
+      uploadStatus: "UPLOAD",
+    });
 
     return { uploadedBy: metadata.userId };
   } catch (e) {
     console.error("FAILED EMBEDDINGS: ", e);
-    await FileModel.findByIdAndUpdate(
-      createdFile._id,
-      {
-        uploadStatus: "FAILED",
-      },
-    );
+    await FileModel.findByIdAndUpdate(createdFile._id, {
+      uploadStatus: "FAILED",
+    });
   }
 };
 // FileRouter for your app, can contain multiple FileRoutes

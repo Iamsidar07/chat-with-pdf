@@ -44,7 +44,7 @@ const PDFRenderer = ({ url }: PDFRendererProps) => {
     });
   };
   return (
-    <div className="w-full  flex flex-col items-center shadow rounded-2xl p-2">
+    <div className="w-full flex flex-col items-center shadow rounded-2xl p-2">
       <div className="h-14 w-full border shadow-t-sm rounded-md flex items-center justify-between gap-2 px-2">
         <div className="flex items-center gap-x-2">
           <div className="flex items-center gap-1.5">
@@ -67,7 +67,7 @@ const PDFRenderer = ({ url }: PDFRendererProps) => {
               max={totalNumPages ?? 1}
               placeholder="1"
               type="number"
-              className="w-18 h-8 "
+              className="w-14 h-8 "
             />
             <div className="flex space-x-2 items-center">
               {currentPageNum}
@@ -94,9 +94,13 @@ const PDFRenderer = ({ url }: PDFRendererProps) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
+                <DropdownMenuItem onSelect={() => setScale(1)}>
+                  100%
+                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => setScale(1.25)}>
                   125%
                 </DropdownMenuItem>
+
                 <DropdownMenuItem onSelect={() => setScale(1.5)}>
                   150%
                 </DropdownMenuItem>
