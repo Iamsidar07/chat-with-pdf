@@ -3,7 +3,7 @@ import UserModel from "@/models/User";
 import { absoluteUrl } from "@/utils";
 import { getUserSubscriptionPlan, stripe } from "@/utils/stripe";
 import { auth } from "@clerk/nextjs";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 export const GET = async (req: NextRequest) => {
   try {
