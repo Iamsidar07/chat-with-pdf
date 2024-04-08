@@ -36,6 +36,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cohere-ai": "^7.9.0",
+    "date-fns": "^3.6.0",
     "langchain": "^0.1.30",
     "lucide-react": "^0.363.0",
     "mongodb": "^6.5.0",
