@@ -29,6 +29,7 @@ export const POST = async (req: Request) => {
   }
 
   if (event.type === "checkout.session.completed") {
+    // TODO: Understand this piece of code
     const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string,
     );
@@ -46,6 +47,7 @@ export const POST = async (req: Request) => {
   }
 
   if (event.type === "invoice.payment_succeeded") {
+    //TODO: I have to understand this part of the code.
     // Retrieve the subscription details from Stripe.
     const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string,

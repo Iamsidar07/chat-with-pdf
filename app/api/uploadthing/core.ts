@@ -1,11 +1,12 @@
+import { PLANS } from "@/config/stripe";
 import FileModel from "@/models/File";
 import { pineconeIndex } from "@/utils/pinecone";
+import { getUserSubscriptionPlan } from "@/utils/stripe";
 import { currentUser } from "@clerk/nextjs";
 import { TaskType } from "@google/generative-ai";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { PineconeStore } from "@langchain/pinecone";
 import { WebPDFLoader } from "langchain/document_loaders/web/pdf";
-import { NextRequest } from "next/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
@@ -13,10 +14,11 @@ export const runtime = "nodejs";
 
 const f = createUploadthing();
 
-const middleware = async ({ req }: { req: NextRequest }) => {
+const middleware = async () => {
   const user = await currentUser();
   if (!user) throw new UploadThingError("Unauthorized");
-  return { userId: user.id };
+  const subscriptionPlan = await getUserSubscriptionPlan();
+  return { userId: user.id, subscriptionPlan };
 };
 const onUploadComplete = async ({
   metadata,
@@ -44,6 +46,24 @@ const onUploadComplete = async ({
     const blob = await response.blob();
     const loader = new WebPDFLoader(blob);
     const docs = await loader.load();
+    const lengthOfPages = docs.length;
+    const { subscriptionPlan } = metadata;
+    const isSubscribed = subscriptionPlan?.isSubscribed;
+
+    const isProPlanExceeded =
+      lengthOfPages >
+      PLANS.find((page) => page.slug === "silver")!?.pagesPerPdf;
+    const isFreePlanExceeded =
+      lengthOfPages > PLANS.find((page) => page.slug === "free")!?.pagesPerPdf;
+
+    if (
+      (isSubscribed && isProPlanExceeded) ||
+      (!isSubscribed && isFreePlanExceeded)
+    ) {
+      await FileModel.findByIdAndUpdate(createdFile._id, {
+        uploadStatus: "FAILED",
+      });
+    }
     const embeddings = new GoogleGenerativeAIEmbeddings({
       modelName: "embedding-001", // 768 dimensions
       taskType: TaskType.RETRIEVAL_DOCUMENT,
@@ -69,7 +89,11 @@ const onUploadComplete = async ({
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
-  pdfUploader: f({ pdf: { maxFileSize: "64MB" } })
+  pdfUploader: f({ pdf: { maxFileSize: "4MB" } })
+    // Set permissions and file types for this FileRoute
+    .middleware(middleware)
+    .onUploadComplete(onUploadComplete),
+  silverPdfUploader: f({ pdf: { maxFileSize: "16MB" } })
     // Set permissions and file types for this FileRoute
     .middleware(middleware)
     .onUploadComplete(onUploadComplete),

@@ -23,5 +23,6 @@ export const config = {
     "/api/message",
     "/api/uploadthing",
     "/api/getFileUploadStatus",
+    "/api/createSession",
   ],
 };

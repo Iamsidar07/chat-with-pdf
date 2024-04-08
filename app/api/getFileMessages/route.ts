@@ -33,7 +33,7 @@ export const GET = async (req: NextRequest) => {
       fileId,
       userId,
     })
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip(offset);
 

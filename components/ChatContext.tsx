@@ -1,10 +1,5 @@
 import React, { ChangeEvent, createContext, useRef, useState } from "react";
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 
 interface IChatContext {
@@ -36,32 +31,24 @@ const ChatContextProvider = ({
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
-  /* const { data } = useInfiniteQuery({
-    queryKey: ["messages"],
-    queryFn: async ({ pageParam }: { pageParam: number }) => {
-      try {
-        const res = await axios.get(
-          `/api/getFileMessages?fileId=${fileId}&pageNum=${pageParam}`,
-        );
-        const data = res.data;
-        return { ...data, pageNum: pageParam };
-      } catch (error) {
-        console.log("Failed useInfiniteQuery: ", error);
-      }
-    },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage?.hasMore ? lastPage.pageNum + 1 : undefined,
-  }); */
-
-  const { mutate: sendMessage } = useMutation({
+  const { mutate: sendMessage, error } = useMutation({
     mutationKey: ["sendMessage"],
     mutationFn: async ({ message }: { message: string }) => {
-      const res = await axios.post("/api/message", {
-        fileId,
-        message,
+      const response = await fetch("/api/message", {
+        method: "POST",
+        body: JSON.stringify({
+          fileId,
+          message,
+        }),
       });
-      return res.data;
+      if (!response.ok) {
+        return toast({
+          title: "Unable to send message",
+          description: "Please try again in a moment",
+          variant: "destructive",
+        });
+      }
+      return response.body;
     },
     onMutate: async ({ message }) => {
       lastMsgRef.current = message;
@@ -111,6 +98,7 @@ const ChatContextProvider = ({
     onError: (_, __, context) => {
       setMessage(lastMsgRef.current);
       setIsLoading(false);
+      console.log(context?.previousMessages);
       queryClient.setQueryData(["messages"], {
         messages: context?.previousMessages ?? [],
       });
@@ -124,7 +112,9 @@ const ChatContextProvider = ({
           variant: "destructive",
         });
       }
-      const reader = new stream.getReader();
+      console.log(stream);
+      console.log(stream);
+      const reader = stream.getReader();
       const decoder = new TextDecoder();
       let isComplete = false;
       let text = "";
@@ -176,6 +166,10 @@ const ChatContextProvider = ({
             }
             return page;
           });
+          console.log({
+            ...oldMessages,
+            pages: updatedPages,
+          });
           return {
             ...oldMessages,
             pages: updatedPages,
@@ -190,6 +184,7 @@ const ChatContextProvider = ({
     setMessage(e.target.value);
   };
   const addMessage = () => sendMessage({ message });
+  console.log(error);
   return (
     <ChatContext.Provider
       value={{

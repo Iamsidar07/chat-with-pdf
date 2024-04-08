@@ -1,28 +1,23 @@
-import { getUserSubscriptionPlan, stripe } from "./stripe";
-import UserModel from "@/models/User";
 import { PLANS } from "@/config/stripe";
-import dbConnect from "@/db";
+import UserModel from "@/models/User";
+import { absoluteUrl } from "@/utils";
+import { getUserSubscriptionPlan, stripe } from "@/utils/stripe";
+import { auth } from "@clerk/nextjs";
+import { NextResponse } from "next/server";
 
-export function absoluteUrl(path: string) {
-  if (typeof window !== "undefined") return path;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}${path}`;
-  return `http://localhost:${process.env.PORT ?? 3000}${path}`;
-}
-
-export async function createSession(userId: string) {
+export const GET = async (req: NextRequest) => {
   try {
-    console.log("CreateSession:");
-    await dbConnect();
+    const { userId } = auth();
     const bilingUrl = absoluteUrl("/dashboard/billing");
     if (!userId) {
-      throw new Error("Unauthorized");
+      return NextResponse.json("Unauthorized", { status: 401 });
     }
 
     const dbUser = await UserModel.findOne({
       id: userId,
     });
     if (!dbUser) {
-      throw new Error("Not found");
+      return NextResponse.json("Not found", { status: 404 });
     }
     const subscriptionPlan = await getUserSubscriptionPlan();
     if (!subscriptionPlan) {
@@ -53,8 +48,11 @@ export async function createSession(userId: string) {
           userId,
         },
       });
-    return { url: stripeSessionForUserNotSubscribed.url };
+    return NextResponse.json(
+      { url: stripeSessionForUserNotSubscribed.url },
+      { status: 200 },
+    );
   } catch (error) {
-    console.log("Failed createSession: ", error);
+    return NextResponse.json("Failed to create session", { status: 500 });
   }
-}
+};

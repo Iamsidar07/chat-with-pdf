@@ -19,10 +19,10 @@ const Page = async () => {
     {
       plan: "Free",
       tagline: "For small side projects.",
-      quota: 10,
+      quota: 3,
       features: [
         {
-          text: "5 pages per PDF",
+          text: "4 pages per PDF",
           footnote: "The maximum amount of pages per PDF-file.",
         },
         {
@@ -44,9 +44,9 @@ const Page = async () => {
       ],
     },
     {
-      plan: "Pro",
+      plan: "Silver",
       tagline: "For larger projects with higher needs.",
-      quota: PLANS.find((p) => p.slug === "pro")!.quota,
+      quota: PLANS.find((p) => p.slug === "silver")!.quota,
       features: [
         {
           text: "25 pages per PDF",
@@ -90,11 +90,12 @@ const Page = async () => {
                 <div
                   key={plan}
                   className={cn("relative rounded-2xl bg-white shadow-lg", {
-                    "border-2 border-blue-600 shadow-blue-300": plan === "Pro",
-                    "border border-gray-200": plan !== "Pro",
+                    "border-2 border-blue-600 shadow-blue-300":
+                      plan === "Silver",
+                    "border border-gray-200": plan !== "Silver",
                   })}
                 >
-                  {plan === "Pro" && (
+                  {plan === "Silver" && (
                     <div className="absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 px-3 py-2 text-sm font-medium text-white">
                       Upgrade Now
                     </div>
@@ -171,7 +172,7 @@ const Page = async () => {
                             variant: "secondary",
                           })}
                         >
-                          {user ? "Upgrade now" : "Sign up"}
+                          {user ? "Free Plan" : "Sign up"}
                           <ArrowRight className="h-5 w-5 ml-1.5" />
                         </Link>
                       ) : user ? (

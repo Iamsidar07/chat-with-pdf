@@ -10,13 +10,15 @@ import { useToast } from "./ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-const UploadDropzone = () => {
+const UploadDropzone = ({ isSubscribed }: { isSubscribed: boolean }) => {
   const { toast } = useToast();
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [fileKey, setFileKey] = useState<null | string>(null);
-  const { startUpload } = useUploadThing("pdfUploader");
+  const { startUpload } = useUploadThing(
+    isSubscribed ? "pdfUploader" : "silverPdfUploader",
+  );
   const { data } = useQuery({
     queryKey: [fileKey],
     queryFn: async () => {
@@ -88,6 +90,9 @@ const UploadDropzone = () => {
               <p>
                 Drag and drop some PDF or{" "}
                 <span className="font-bold">click to upload</span>{" "}
+                <p className="text-zinc-500">
+                  PDF(up to {isSubscribed ? "16" : "4"}MB)
+                </p>
               </p>
               {acceptedFiles && acceptedFiles[0] ? (
                 <div className="max-w-sm border  p-2 rounded flex items-center gap-x-2">
@@ -113,15 +118,23 @@ const UploadDropzone = () => {
     </Dropzone>
   );
 };
-const UploadButton = () => {
+const UploadButton = ({ isSubscribed }: { isSubscribed: boolean }) => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <>
-      <Dialog>
-        <DialogTrigger asChild>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(v) => {
+          if (!v) {
+            setIsOpen(v);
+          }
+        }}
+      >
+        <DialogTrigger onClick={() => setIsOpen(true)} asChild>
           <Button>upload PDF</Button>
         </DialogTrigger>
         <DialogContent>
-          <UploadDropzone />
+          <UploadDropzone isSubscribed={isSubscribed} />
         </DialogContent>
       </Dialog>
     </>

@@ -1,19 +1,12 @@
 "use client";
 import { ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
-import { useMutation } from "@tanstack/react-query";
-import { createSession } from "@/utils";
+import useCreateSession from "@/hooks/useCreateSession";
 
 const UpgradeButton = () => {
-  const { mutate: handleCreateSession } = useMutation({
-    mutationKey: ["createSession"],
-    mutationFn: createSession,
-    onSuccess: ({ url }) => {
-      window.location.href = url ?? "/dashboard/billing";
-    },
-  });
+  const { createSession } = useCreateSession();
   return (
-    <Button className="w-full" onClick={() => handleCreateSession()}>
+    <Button className="w-full" onClick={() => createSession()}>
       Upgrade now <ArrowRight className="h-5 w-5 ml-1.5" />
     </Button>
   );

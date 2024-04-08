@@ -18,11 +18,15 @@ const Messages = ({ fileId }: { fileId: string }) => {
   const { data, fetchNextPage, isLoading } = useInfiniteQuery({
     queryKey: ["messages"],
     queryFn: async ({ pageParam }) => {
-      const res = await axios.get(
-        `/api/getFileMessages?fileId=${fileId}&pageNum=${pageParam}`,
-      );
-      const data = res.data;
-      return { ...data, pageNum: pageParam };
+      try {
+        const res = await axios.get(
+          `/api/getFileMessages?fileId=${fileId}&pageNum=${pageParam}`,
+        );
+        const data = res.data;
+        return { ...data, pageNum: pageParam };
+      } catch (error) {
+        throw new Error("Error fetching data:", error);
+      }
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
