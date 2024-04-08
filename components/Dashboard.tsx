@@ -10,8 +10,14 @@ import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { format } from "date-fns";
+import { getUserSubscriptionPlan } from "@/utils/stripe";
+import { useAuth } from "@clerk/nextjs";
+interface DashboardProps {
+  subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>;
+}
 
-const Dashboard = ({ userId }: { userId: string }) => {
+const Dashboard = ({ subscriptionPlan }: DashboardProps) => {
+  const { userId } = useAuth();
   const queryClient = useQueryClient();
   const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<
     string | null
@@ -70,7 +76,7 @@ const Dashboard = ({ userId }: { userId: string }) => {
     <MaxWidthWrapper className="pt-12 sm:pt-24">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold sm:text-5xl">My Files</h2>
-        <UploadButton />
+        <UploadButton isSubscribed={subscriptionPlan?.isSubscribed!} />
       </div>
       <Separator className="mt-12" />
       {files && files?.length > 0 ? (
