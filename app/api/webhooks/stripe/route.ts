@@ -27,13 +27,14 @@ export const POST = async (req: Request) => {
       status: 200,
     });
   }
+  console.log("event", event.type);
 
   if (event.type === "checkout.session.completed") {
     // TODO: Understand this piece of code
     const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string,
     );
-    await UserModel.findOneAndUpdate(
+    const user = await UserModel.findOneAndUpdate(
       { id: session.metadata.userId },
       {
         stripeSubscriptionId: subscription.id,
@@ -43,7 +44,9 @@ export const POST = async (req: Request) => {
           subscription.current_period_end * 1000,
         ),
       },
+      { new: true },
     );
+    console.log({ user });
   }
 
   if (event.type === "invoice.payment_succeeded") {

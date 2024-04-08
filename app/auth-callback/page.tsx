@@ -23,7 +23,7 @@ const Page = () => {
         throw new Error("Failed to authenticate");
       }
     },
-    retryDelay: (_failureCount) => 5,
+    retryDelay: (_failureCount) => 500,
   });
   useEffect(() => {
     if (!isLoading && isAuth) {

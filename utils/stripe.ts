@@ -66,3 +66,5 @@ export async function getUserSubscriptionPlan() {
     console.log("Failed getUserSubscriptionPlan: ", error);
   }
 }
+
+export function createSession() {}

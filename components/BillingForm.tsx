@@ -6,14 +6,34 @@ import { Button } from "./ui/button";
 import { Loader } from "lucide-react";
 import { format } from "date-fns";
 import { getUserSubscriptionPlan } from "@/utils/stripe";
-import useCreateSession from "@/hooks/useCreateSession";
+import { useTransition } from "react";
+import { createStripeSession } from "@/actions";
+import { useToast } from "./ui/use-toast";
 
 interface BillingFormProps {
   subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>;
 }
 const BillingForm = ({ subscriptionPlan }: BillingFormProps) => {
-  console.log({ subscriptionPlan });
-  const { createSession, isLoading } = useCreateSession();
+  const { toast } = useToast();
+  const [isLoading, startTransition] = useTransition();
+  const createSession = () => {
+    startTransition(async () => {
+      try {
+        const session = await createStripeSession();
+        if (session?.url) {
+          window.location.href = session.url ?? "/dashboard/billing";
+        }
+      } catch (error) {
+        console.log(error);
+        toast({
+          title: "Failed to create session.",
+          description: "Please try again letter.",
+          variant: "destructive",
+        });
+      }
+    });
+  };
+
   return (
     <MaxWidthWrapper className="max-w-5xl">
       <form

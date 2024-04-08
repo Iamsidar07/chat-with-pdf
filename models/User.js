@@ -4,10 +4,20 @@ const UserSchema = new Schema(
   {
     id: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    stripeCustomerId: { type: String, unique: true, sparse: true },
-    stripeSubscriptionId: { type: String, unique: true, sparse: true },
-    stripePriceId: String,
-    stripeCurrentPeriodEnd: Date,
+    stripeCustomerId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      default: null,
+    },
+    stripeSubscriptionId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      default: null,
+    },
+    stripePriceId: { type: String, default: null },
+    stripeCurrentPeriodEnd: { type: Date, default: null },
   },
   { timestamps: true },
 );
