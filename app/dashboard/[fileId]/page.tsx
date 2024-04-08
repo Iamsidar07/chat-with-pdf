@@ -1,6 +1,7 @@
 import ChatWrapper from "@/components/ChatWrapper";
 import PDFRenderer from "@/components/PDFRenderer";
 import FileModel from "@/models/File";
+import { getUserSubscriptionPlan } from "@/utils/stripe";
 import { currentUser } from "@clerk/nextjs";
 import { notFound, redirect } from "next/navigation";
 
@@ -16,10 +17,7 @@ const Page = async ({ params }: PageProps) => {
   if (!user || !user.id) redirect("/auth-callback?origin=password");
   const file = await FileModel.findById(fileId);
   if (!file) notFound();
-  const subscriptionPlan = {
-    name: "Pro",
-    pagesPerPdf: 35,
-  };
+  const subscriptionPlan = await getUserSubscriptionPlan();
   return (
     <div className="flex justify-between flex-1 flex-col h-[calc(100vh-56px)] ">
       <div className="mx-auto max-w-8xl w-full grow lg:flex xl:px-2">
