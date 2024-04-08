@@ -56,40 +56,44 @@ const ChatContextProvider = ({
       await queryClient.cancelQueries({
         queryKey: ["messages"],
       });
-      const previousMessages = queryClient.getQueryData(["messages"]);
+      const previousMessages: InfiniteQueryResult | undefined =
+        queryClient.getQueryData(["messages"]);
       console.log({ previousMessages });
-      queryClient.setQueryData(["messages"], (oldMessages) => {
-        console.log({ oldMessages });
-        if (!oldMessages) {
+      queryClient.setQueryData(
+        ["messages"],
+        (oldMessages: InfiniteQueryResult) => {
+          console.log({ oldMessages });
+          if (!oldMessages) {
+            return {
+              pages: [],
+              pageParams: [],
+            };
+          }
+          const newPages = [...oldMessages.pages];
+          const latestPage = newPages[0];
+          latestPage.messages = [
+            {
+              id: crypto.randomUUID(),
+              text: message,
+              isUserMessage: true,
+              createdAt: new Date().toISOString(),
+            },
+            ...latestPage.messages,
+          ];
+          newPages[0] = latestPage;
           return {
-            pages: [],
-            pageParams: [],
+            ...oldMessages,
+            pages: newPages,
           };
-        }
-        const newPages = [...oldMessages.pages];
-        const latestPage = newPages[0];
-        latestPage.messages = [
-          {
-            id: crypto.randomUUID(),
-            text: message,
-            isUserMessage: true,
-            createdAt: new Date().toISOString(),
-          },
-          ...latestPage.messages,
-        ];
-        newPages[0] = latestPage;
-        return {
-          ...oldMessages,
-          pages: newPages,
-        };
-      });
+        },
+      );
       setIsLoading(true);
       return {
         previousMessages:
-          previousMessages?.pages.flatMap((page) => page.messages) ?? [],
+          previousMessages?.pages.flatMap((page: TData) => page.messages) ?? [],
       };
     },
-    onSettled: async (_, __, { message }) => {
+    onSettled: async () => {
       setIsLoading(false);
       await queryClient.invalidateQueries({
         queryKey: ["messages"],
@@ -112,9 +116,8 @@ const ChatContextProvider = ({
           variant: "destructive",
         });
       }
-      console.log(stream);
-      console.log(stream);
-      const reader = stream.getReader();
+      // @ts-ignore
+      const reader = stream?.getReader();
       const decoder = new TextDecoder();
       let isComplete = false;
       let text = "";
@@ -125,56 +128,59 @@ const ChatContextProvider = ({
         text += chunkValue;
       }
       try {
-        queryClient.setQueryData(["messages"], (oldMessages) => {
-          if (!oldMessages) {
-            return {
-              pages: [],
-              pageParams: [],
-            };
-          }
-          const isAIResponseCreated = oldMessages.pages.some((page) => {
-            page.messages.some((msg) => msg.id === "ai-response");
-          });
-          const updatedPages = oldMessages.pages.map((page) => {
-            if (page === oldMessages.pages[0]) {
-              let updatedMessages;
-              if (!isAIResponseCreated) {
-                updatedMessages = [
-                  {
-                    id: "ai-response",
-                    isUserMessage: false,
-                    text,
-                    createdAt: new Date().toISOString(),
-                  },
-                  ...page.messages,
-                ];
-              } else {
-                updatedMessages = page.messages.map((msg) => {
-                  if (msg.id === "ai-response") {
-                    return {
-                      ...msg,
-                      text,
-                    };
-                  }
-                  return msg;
-                });
-              }
+        queryClient.setQueryData(
+          ["messages"],
+          (oldMessages: InfiniteQueryResult) => {
+            if (!oldMessages) {
               return {
-                ...page,
-                messages: updatedMessages,
+                pages: [],
+                pageParams: [],
               };
             }
-            return page;
-          });
-          console.log({
-            ...oldMessages,
-            pages: updatedPages,
-          });
-          return {
-            ...oldMessages,
-            pages: updatedPages,
-          };
-        });
+            const isAIResponseCreated = oldMessages.pages.some((page) => {
+              page.messages.some((msg) => msg.id === "ai-response");
+            });
+            const updatedPages = oldMessages.pages.map((page) => {
+              if (page === oldMessages.pages[0]) {
+                let updatedMessages;
+                if (!isAIResponseCreated) {
+                  updatedMessages = [
+                    {
+                      id: "ai-response",
+                      isUserMessage: false,
+                      text,
+                      createdAt: new Date().toISOString(),
+                    },
+                    ...page.messages,
+                  ];
+                } else {
+                  updatedMessages = page.messages.map((msg) => {
+                    if (msg.id === "ai-response") {
+                      return {
+                        ...msg,
+                        text,
+                      };
+                    }
+                    return msg;
+                  });
+                }
+                return {
+                  ...page,
+                  messages: updatedMessages,
+                };
+              }
+              return page;
+            });
+            console.log({
+              ...oldMessages,
+              pages: updatedPages,
+            });
+            return {
+              ...oldMessages,
+              pages: updatedPages,
+            };
+          },
+        );
       } catch (error) {
         console.log("FAILED UPDATED MESSAGES: ", error);
       }

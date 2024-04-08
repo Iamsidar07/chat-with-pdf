@@ -25,7 +25,7 @@ const Messages = ({ fileId }: { fileId: string }) => {
         const data = res.data;
         return { ...data, pageNum: pageParam };
       } catch (error) {
-        throw new Error("Error fetching data:", error);
+        throw new Error("Error fetching data:");
       }
     },
     initialPageParam: 1,
@@ -33,6 +33,7 @@ const Messages = ({ fileId }: { fileId: string }) => {
       return lastPage?.hasMore ? lastPage.pageNum + 1 : undefined;
     },
   });
+  console.log({ data });
   useEffect(() => {
     if (entry?.isIntersecting) {
       fetchNextPage();

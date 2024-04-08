@@ -29,10 +29,13 @@ export const GET = async (req: NextRequest) => {
     if (!file)
       return NextResponse.json({ error: "Not Found" }, { status: 400 });
     const countMessages = await MessageModel.countDocuments();
-    const messages = await MessageModel.find({
-      fileId,
-      userId,
-    })
+    const messages = await MessageModel.find(
+      {
+        fileId,
+        userId,
+      },
+      { text: true, isUserMessage: true, createdAt: true },
+    )
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip(offset);
