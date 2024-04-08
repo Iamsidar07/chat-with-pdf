@@ -28,7 +28,7 @@ export const GET = async (req: NextRequest) => {
         customer: dbUser.stripeCustomerId,
         return_url: bilingUrl,
       });
-      return { url: stripeSession.url };
+      return NextResponse.json({ url: stripeSession.url }, { status: 200 });
     }
 
     const stripeSessionForUserNotSubscribed =
