@@ -1,6 +1,7 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models, Document } from "mongoose";
+import { User } from "@/typings";
 
-const UserSchema = new Schema(
+const UserSchema = new Schema<User>(
   {
     id: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
@@ -22,5 +23,5 @@ const UserSchema = new Schema(
   { timestamps: true },
 );
 
-const UserModel = models?.User || model("User", UserSchema);
+const UserModel = models?.User || model<User>("User", UserSchema);
 export default UserModel;

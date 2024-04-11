@@ -1,6 +1,7 @@
+import { Message } from "@/typings";
 import { Schema, model, models } from "mongoose";
 
-const MessageSchema = new Schema(
+const MessageSchema = new Schema<Message>(
   {
     id: String,
     text: String,
@@ -10,5 +11,5 @@ const MessageSchema = new Schema(
   },
   { timestamps: true },
 );
-const MessageModel = models.Message || model("Message", MessageSchema);
+const MessageModel = models.Message || model<Message>("Message", MessageSchema);
 export default MessageModel;

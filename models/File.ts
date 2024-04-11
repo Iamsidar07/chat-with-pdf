@@ -1,6 +1,7 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models, Document } from "mongoose";
+import { TFile } from "@/typings";
 
-const FileSchema = new Schema(
+const FileSchema = new Schema<TFile>(
   {
     name: String,
     uploadStatus: {
@@ -16,5 +17,5 @@ const FileSchema = new Schema(
   { timestamps: true },
 );
 
-const FileModel = models.File || model("File", FileSchema);
+const FileModel = models.File || model<TFile>("File", FileSchema);
 export default FileModel;
