@@ -1,5 +1,15 @@
 import { Schema, model, models, Document } from "mongoose";
-import { User } from "@/typings";
+
+interface User extends Document {
+  id: string;
+  email: string;
+  stripeCustomerId: string;
+  stripePriceId: string;
+  stripeCurrentPeriodEnd: Date;
+  stripeSubscriptionId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const UserSchema = new Schema<User>(
   {

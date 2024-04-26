@@ -1,5 +1,15 @@
 import { Schema, model, models, Document } from "mongoose";
-import { TFile } from "@/typings";
+
+interface TFile extends Document {
+  name: string;
+  uploadStatus: "PENDING" | "PROCESSING" | "FAILED" | "UPLOAD";
+  messages: [Schema.Types.ObjectId];
+  url: string;
+  key: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const FileSchema = new Schema<TFile>(
   {

@@ -11,7 +11,7 @@ interface TData {
   messages: Message[];
 }
 
-export interface User extends Document {
+export interface User {
   _id: string;
   id: string;
   email: string;
@@ -23,18 +23,18 @@ export interface User extends Document {
   updatedAt: Date;
 }
 
-export interface Message extends Document {
-  _id: string;
+export interface Message {
+  _id?: string;
   id: string;
   text: string;
   isUserMessage: boolean;
-  userId: string;
-  fileId: Schema.Types.ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
+  userId?: string;
+  fileId?: Schema.Types.ObjectId;
+  createdAt: string;
+  updatedAt?: string;
 }
 
-export interface TFile extends Document {
+export interface TFile {
   _id: string;
   name: string;
   uploadStatus: "PENDING" | "PROCESSING" | "FAILED" | "UPLOAD";

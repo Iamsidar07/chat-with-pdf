@@ -1,6 +1,7 @@
 import React, { ChangeEvent, createContext, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
+import { InfiniteQueryResult, TData } from "@/typings";
 
 interface IChatContext {
   message: string;
@@ -50,7 +51,7 @@ const ChatContextProvider = ({
       }
       return response.body;
     },
-    onMutate: async ({ message }) => {
+    onMutate: async ({ message }: { message: string }) => {
       lastMsgRef.current = message;
       setMessage("");
       await queryClient.cancelQueries({
@@ -99,7 +100,7 @@ const ChatContextProvider = ({
         queryKey: ["messages"],
       });
     },
-    onError: (_, __, context) => {
+    onError: (_: any, __: any, context: { previousMessages: any; }) => {
       setMessage(lastMsgRef.current);
       setIsLoading(false);
       console.log(context?.previousMessages);
@@ -107,7 +108,7 @@ const ChatContextProvider = ({
         messages: context?.previousMessages ?? [],
       });
     },
-    onSuccess: async (stream) => {
+    onSuccess: async (stream: { getReader: () => any; }) => {
       setIsLoading(false);
       if (!stream) {
         return toast({
