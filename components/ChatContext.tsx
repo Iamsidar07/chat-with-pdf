@@ -98,14 +98,14 @@ const ChatContextProvider = ({
         queryKey: ["messages"],
       });
     },
-    onError: (_: any, __: any, context: { previousMessages: any; }) => {
+    onError: (_: any, __: any, context: { previousMessages: any }) => {
       setMessage(lastMsgRef.current);
       setIsLoading(false);
       queryClient.setQueryData(["messages"], {
         messages: context?.previousMessages ?? [],
       });
     },
-    onSuccess: async (stream: { getReader: () => any; }) => {
+    onSuccess: async (stream: ReadableStream<Uint8Array>) => {
       setIsLoading(false);
       if (!stream) {
         return toast({
@@ -114,7 +114,6 @@ const ChatContextProvider = ({
           variant: "destructive",
         });
       }
-      // @ts-ignore
       const reader = stream?.getReader();
       const decoder = new TextDecoder();
       let isComplete = false;
@@ -169,7 +168,7 @@ const ChatContextProvider = ({
               }
               return page;
             });
-                       return {
+            return {
               ...oldMessages,
               pages: updatedPages,
             };
