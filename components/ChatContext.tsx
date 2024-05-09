@@ -32,7 +32,9 @@ const ChatContextProvider = ({
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { mutate: sendMessage, error } = useMutation({
+  const { mutate: sendMessage, error } = useMutation<
+    ReadableStream<Uint8Array>
+  >({
     mutationKey: ["sendMessage"],
     mutationFn: async ({ message }: { message: string }) => {
       const response = await fetch("/api/message", {
