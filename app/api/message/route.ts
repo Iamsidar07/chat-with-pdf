@@ -38,7 +38,6 @@ export const POST = async (req: NextRequest) => {
 
     const results = await vectorStore.similaritySearch(message, 4);
     const context = results.map((r) => r.pageContent).join("\n");
-    console.log({ context });
     const recentMessages: GenerativeAIMessage[] = await MessageModel.find(
       {
         fileId,
@@ -79,7 +78,6 @@ export const POST = async (req: NextRequest) => {
     const result = await chat.sendMessageStream(msg);
     const stream = GoogleGenerativeAIStream(result, {
       async onCompletion(completion) {
-        console.log({ completion });
         await MessageModel.create({
           text: message,
           isUserMessage: true,

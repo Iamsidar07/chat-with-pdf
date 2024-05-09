@@ -59,11 +59,9 @@ const ChatContextProvider = ({
       });
       const previousMessages: InfiniteQueryResult | undefined =
         queryClient.getQueryData(["messages"]);
-      console.log({ previousMessages });
       queryClient.setQueryData(
         ["messages"],
         (oldMessages: InfiniteQueryResult) => {
-          console.log({ oldMessages });
           if (!oldMessages) {
             return {
               pages: [],
@@ -103,7 +101,6 @@ const ChatContextProvider = ({
     onError: (_: any, __: any, context: { previousMessages: any; }) => {
       setMessage(lastMsgRef.current);
       setIsLoading(false);
-      console.log(context?.previousMessages);
       queryClient.setQueryData(["messages"], {
         messages: context?.previousMessages ?? [],
       });
@@ -172,11 +169,7 @@ const ChatContextProvider = ({
               }
               return page;
             });
-            console.log({
-              ...oldMessages,
-              pages: updatedPages,
-            });
-            return {
+                       return {
               ...oldMessages,
               pages: updatedPages,
             };

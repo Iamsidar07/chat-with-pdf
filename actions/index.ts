@@ -8,9 +8,7 @@ import { auth } from "@clerk/nextjs";
 
 export const createStripeSession = async () => {
   const { userId } = auth();
-  console.log({ userId });
   const bilingUrl = absoluteUrl("/dashboard/billing");
-  console.log({ bilingUrl });
   if (!userId) {
     throw new Error("Unauthorized");
   }

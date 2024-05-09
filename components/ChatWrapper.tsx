@@ -18,15 +18,14 @@ const ChatWrapper = ({ fileId, subscriptionPlan }: ChatWrapperProps) => {
     queryFn: async () => {
       try {
         const response = await axios.get(
-          `/api/getFileUploadStatus?fileId=${fileId}`,
+          `/api/getFileUploadStatus?fileId=${fileId}`
         );
-        console.log(response.data);
         return response.data;
       } catch (error: any) {
         console.error("FAILED: getFileUploadStatus", error.message);
       }
     },
-    refetchInterval: (query) => {
+    refetchInterval: (query: any) => {
       const data = query?.state?.data;
       return data?.status == "UPLOAD" || data?.status == "FAILED" ? false : 500;
     },

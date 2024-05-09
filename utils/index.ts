@@ -11,7 +11,6 @@ export function absoluteUrl(path: string) {
 
 export async function createSession(userId: string) {
   try {
-    console.log("CreateSession:");
     await dbConnect();
     const bilingUrl = absoluteUrl("/dashboard/billing");
     if (!userId) {

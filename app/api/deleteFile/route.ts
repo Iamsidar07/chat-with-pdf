@@ -8,7 +8,6 @@ export const DELETE = async (req: NextRequest) => {
   const id = searchParams.get("id");
 
   if (!id) {
-    console.log(id);
     return NextResponse.json({ error: "Id is required" }, { status: 400 });
   }
 

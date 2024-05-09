@@ -17,10 +17,10 @@ const Messages = ({ fileId }: { fileId: string }) => {
   const { isLoading: isAIThinking } = useContext(ChatContext);
   const { data, fetchNextPage, isLoading } = useInfiniteQuery({
     queryKey: ["messages"],
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam }: { pageParam: number }) => {
       try {
         const res = await axios.get(
-          `/api/getFileMessages?fileId=${fileId}&pageNum=${pageParam}`,
+          `/api/getFileMessages?fileId=${fileId}&pageNum=${pageParam}`
         );
         const data = res.data;
         return { ...data, pageNum: pageParam };
@@ -29,17 +29,16 @@ const Messages = ({ fileId }: { fileId: string }) => {
       }
     },
     initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
+    getNextPageParam: (lastPage: any) => {
       return lastPage?.hasMore ? lastPage.pageNum + 1 : undefined;
     },
   });
-  console.log({ data });
   useEffect(() => {
     if (entry?.isIntersecting) {
       fetchNextPage();
     }
   }, [entry?.isIntersecting, fetchNextPage]);
-  const messages = data?.pages.reduce((acc, page) => {
+  const messages = data?.pages.reduce((acc: any, page: any) => {
     return [...acc, ...page.messages];
   }, []);
   const loadingMessage = {
@@ -57,7 +56,6 @@ const Messages = ({ fileId }: { fileId: string }) => {
     ...(isAIThinking ? [loadingMessage] : []),
     ...(messages ?? []),
   ];
-  console.log({ combinedMessages });
 
   return (
     <div className="flex h-[calc(100vh-3.5rem-7rem)] pb-24  border-zinc-200 flex-col gap-3 overflow-y-auto no-scrollbar  overflow-x-hidden p-2">

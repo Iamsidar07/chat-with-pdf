@@ -27,7 +27,6 @@ export const POST = async (req: Request) => {
       status: 200,
     });
   }
-  console.log("event", event.type);
 
   if (event.type === "checkout.session.completed") {
     // TODO: Understand this piece of code
