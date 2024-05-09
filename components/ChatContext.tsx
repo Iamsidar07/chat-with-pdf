@@ -107,7 +107,7 @@ const ChatContextProvider = ({
         messages: context?.previousMessages ?? [],
       });
     },
-    onSuccess: async (stream: ReadableStream<Uint8Array>) => {
+    onSuccess: async (stream: ReadableStream<Uint8Array> | null) => {
       setIsLoading(false);
       if (!stream) {
         return toast({
