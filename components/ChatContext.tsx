@@ -32,11 +32,11 @@ const ChatContextProvider = ({
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { mutate: sendMessage, error } = useMutation<
-    Promise<ReadableStream<Uint8Array>>
-  >({
+  const { mutate: sendMessage, error } = useMutation({
     mutationKey: ["sendMessage"],
-    mutationFn: async ({ message }: { message: string }) => {
+    mutationFn: async (
+      message: string,
+    ): Promise<ReadableStream<Uint8Array> | null> => {
       const response = await fetch("/api/message", {
         method: "POST",
         body: JSON.stringify({
@@ -53,7 +53,7 @@ const ChatContextProvider = ({
       }
       return response.body;
     },
-    onMutate: async ({ message }: { message: string }) => {
+    onMutate: async (message: string) => {
       lastMsgRef.current = message;
       setMessage("");
       await queryClient.cancelQueries({
@@ -184,7 +184,7 @@ const ChatContextProvider = ({
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
   };
-  const addMessage = () => sendMessage({ message });
+  const addMessage = () => sendMessage(message);
   console.log(error);
   return (
     <ChatContext.Provider
