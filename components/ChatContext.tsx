@@ -33,7 +33,7 @@ const ChatContextProvider = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const { mutate: sendMessage, error } = useMutation<
-    ReadableStream<Uint8Array>,
+    Promise<ReadableStream<Uint8Array>>,
     { message: string }
   >({
     mutationKey: ["sendMessage"],
@@ -47,7 +47,7 @@ const ChatContextProvider = ({
         }),
       });
       if (!response.ok) {
-        return toast({
+        toast({
           title: "Unable to send message",
           description: "Please try again in a moment",
           variant: "destructive",
