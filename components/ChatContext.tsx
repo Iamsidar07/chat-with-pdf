@@ -37,7 +37,8 @@ const ChatContextProvider = ({
     { message: string }
   >({
     mutationKey: ["sendMessage"],
-    mutationFn: async ({ message }: { message: string }) => {
+    mutationFn: async (variables: { message: string }) => {
+      const { message } = variables;
       const response = await fetch("/api/message", {
         method: "POST",
         body: JSON.stringify({
